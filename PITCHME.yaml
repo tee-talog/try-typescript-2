@@ -1,5 +1,5 @@
 highlight : Github
 code-line-numbers : true
 transition : slide
-title : "TypeScript 入門"
+title : "TypeScript 入門 〜その他の型〜"
 theme-override : PITCHME.css

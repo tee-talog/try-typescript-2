@@ -1,10 +1,10 @@
-# try-typescript
+# try-typescript-2
 Getting Started TypeScript!
 
 # preparation
 ```
-git clone https://github.com/tee-talog/try-typescript.git
-cd try-typescript
+git clone https://github.com/tee-talog/try-typescript-2.git
+cd try-typescript-2
 npm i
 ```
 
@@ -19,4 +19,4 @@ slide page 19
   * format .js and .ts files with Prettier
 
 ## slide
-https://gitpitch.com/tee-talog/try-typescript
+https://gitpitch.com/tee-talog/try-typescript-2
