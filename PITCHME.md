@@ -1,4 +1,4 @@
-# TypeScript 入門 〜その他の型〜
+# TypeScript 入門 〜もうちょっと詳しく編〜
 
 ---
 
@@ -7,43 +7,16 @@
 * 前回の復習
 * 他にどんな型があるのか
 * 他にどんな言語機能があるのか
-* ハンズオン
+* 前回の質問に答える
+
 ---
 
 # 実行方法
 
 ---
 
-### 初期設定
 ```sh:Terminal
-npx tsc --init
-```
-
-<small>`src/try/try1.ts`</small>
-
-```ts
-const add = (a: number, b: number): number => a + b
-console.log(add(1, 2)) // => 3
-```
-
-<small>諸事情により、実際のソースではブロックでスコープを切っている。</small>
-
-```sh:Terminal
-# コンパイル
-npx tsc -p .
-
-# 実行 (node で普通に実行するだけ)
-node dist/try/try1.js
-# => 3
-```
-
-いちいちコンパイル → 実行は大変。
-
-今回はコンパイルせずに直接実行できる ts-node を利用する。
-
-
-```sh:Terminal
-# 直接実行
+# 直接 TS ファイルを実行
 npm start src/try/try1.ts
  # => 3
 ```
@@ -73,12 +46,12 @@ const add = (a: number, b: number): number => a + b
 
 ### 型の種類
 * プリミティブ型
-    * string（文字列）
-    * number（数値）
-    * boolean（真偽値）
-    * null
-    * undefined
-    * リテラル型
+	* string（文字列）
+	* number（数値）
+	* boolean（真偽値）
+	* null
+	* undefined
+	* リテラル型
 * 配列型
 * オブジェクト型
 * 関数型
@@ -149,7 +122,7 @@ const add = (a: number, b: number): number => a + b
 ### symbol, bigint
 JavaScript に割と最近入った人たち。
 
-注意点として、ネイティブでこれらが実装されていないと使えません。
+注意点として、ネイティブでこれらが実装されていないと使えない。
 
 `symbol` は ES2015、`bigint` は ES2020 で実装。
 
@@ -159,25 +132,44 @@ JavaScript に割と最近入った人たち。
 * 配列型
 * オブジェクト型
 	* オブジェクトリテラル
+		* weak type
 	* object
 	* {}
-	* weak type
 * 関数型
 * any
+* unknown
 * タプル型
 * void
 * never
-* unknown
 
 ---
 
 ### オブジェクトリテラル
 前回説明したやつ。
 
+```ts
+type ObjectLiteral = {
+  firstName: string
+  lastName: string
+}
+
+const tanaka: ObjectLiteral = {
+  firstName: 'Tarou',
+  lastName: 'Tanaka'
+}
+```
+
 ---
 
 ### `object`
-プリミティブ型以外。
+プリミティブ型と null, undefined 以外なら何でも入る。ちょっと堅い any。
+
+```ts
+const obj1: object = { foo: 'foo', bar: 'bar', baz: 'baz' }
+const obj2: object = { hoge: 'hoge', fuga: 'fuga' }
+```
+
+特別な理由がない限り使わないのが吉。
 
 ---
 
@@ -186,6 +178,15 @@ JavaScript に割と最近入った人たち。
 
 つまり null, undeifned 以外。
 
+```ts
+const brace1: {} = { foo: 'foo', bar: 'bar', baz: 'baz' }
+const brase2: {} = { hoge: 'hoge', fuga: 'fuga' }
+const brase3: {} = 1
+const brase4: {} = 'banana'
+```
+
+特別な理由がない限り使わないのが吉。
+
 ---
 
 ### weak type
@@ -193,21 +194,67 @@ JavaScript に割と最近入った人たち。
 
 代入するオブジェクトは、省略可能なプロパティのうちいずれか 1 つを持っている必要がある。
 
+```ts
+type CliOptions = {
+  verbose?: boolean
+  row?: number
+  directory?: string
+}
+
+// const options0: CliOptions = { help: true } // => Error
+const options1: CliOptions = { verbose: true }
+const options2: CliOptions = { row: 10, directory: './try-typescript-2' }
+const options3: CliOptions = {} // 例外として {} は代入できる
+```
+
+---
+
+### unknown
+型安全な any。any の代わりになるべくこれを使うべき。
+
+どんな型でも代入できるが、どんな型かわからないと、どんな操作もできない。
+数値計算もできなければプロパティアクセスも出来ない。
+
+`JSON.parse()` の戻り値で使ってほしい。
+
+```ts
+const jsonFileString = require('fs').readFileSync('./config.json')
+const config: unknown = JSON.parse(jsonFileString) as unknown
+
+// console.log(config.type) // => Error
+if ('type' in config) {
+  console.log(config.type)
+}
+```
+
 ---
 
 ### タプル型
-複数の値を 1 つの値として扱えるようにした型。
+複数の値を 1 つの値として扱えるようにした型。配列の各要素に対して、それぞれ型をつけられる。
 
-配列の各要素に対して、それぞれ型をつけられる。
+JavaScript にはタプルはないが、配列で似たようなことができる（配列の分割代入など）。
 
-TypeScript や JavaScript にはタプルはないが、配列で似たようなことができる（配列の分割代入など）。
+関数は分けられないけど複数の値を返したいときに使える。
+
+```ts
+type Tuple = [string, boolean]
+
+const tuple = ['あなたは人間ですか？', true]
+```
 
 ---
 
 ### void
 なにもないことを表す型。
 
-要するに、戻り値のない関数の戻り値の型。
+戻り値のない関数の戻り値の型。
+
+undefined だけを値に取る。
+
+```ts
+const noReturnFunction = (): void => {}
+noReturnFunction() // => undefined
+```
 
 ---
 
@@ -216,15 +263,23 @@ TypeScript や JavaScript にはタプルはないが、配列で似たような
 
 いずれかの case にマッチする switch 文の default や、必ず throw される関数の戻り値（として指定できる）。
 
----
+どんな値も never 型の変数には入れられない。
 
-### unknown
-型安全な any。
+```ts
+const type: 'success' | 'fail' = 'success'
 
-どんな型でも代入できるが、どんな型かわからないと、どんな操作もできない。
-数値計算もできなければプロパティアクセスも出来ない。
-
-`JSON.parse()` の戻り値で使ってほしい。
+switch (type) {
+  case 'success':
+    console.log('ok')
+    break
+  case 'fail'
+    console.log('ng')
+    break
+  default:
+    // type は never 型
+	console.log(type)
+}
+```
 
 ---
 
@@ -233,10 +288,10 @@ TypeScript や JavaScript にはタプルはないが、配列で似たような
 ---
 
 ### 今回やる
-* 型ガード
+* Type Guard
 * readonly
-* as const
-* intersection types
+* const assertion
+* Intersection Types
 * Enum
 * Optional Chaining
 * Nullish Coalescing
@@ -249,100 +304,199 @@ TypeScript や JavaScript にはタプルはないが、配列で似たような
 
 ---
 
-### 型ガード
+### Type Guard
 型を絞り込むための関数が作れる。
 
 これを使用して if 文等で絞り込みを行うと、typeof で分岐したときと同じように型が絞り込まれる。
 
+プログラミングをする人が型の安全性を保証する必要がある。
+
+```ts
+type Human = {
+  firstName: string
+  lastName: string
+}
+
+const isHuman = (obj: Human): obj is Human =>
+    obj.firstName != null && obj.lastName != null
+
+const tanaka: Human | string | number = {
+  firstName: 'Tarou',
+  lastName: 'Tanaka'
+}
+
+// console.log(tanaka.firstName) // => Error
+
+if (isHuman(tanaka)) {
+  // tanaka は Human 型として扱える
+  console.log(tanaka.firstName)
+}
+```
+
 ---
 
 ### readonly
+プロパティ版の const。
+
+getter only のプロパティ。
+
+```ts
+class ReadOnlyProperty {
+  readonly zero = 0
+  one = 1
+}
+
+const instance = new ReadOnlyProperty()
+// instance.zero = 100 // Error
+```
 
 ---
 
-### as const
+### const assertion
+書き換えを意図しないことを示す。
+
+例えばオブジェクトリテラルに使った場合、プロパティが readonly になり、なるべくリテラル型・タプル型に推論される。
+
+```ts
+const actionCreator = (data: string) => {
+  return {
+    type: 'SET_DATA',
+    payload: data
+  } as const
+}
+
+actionCreator('test') // => { readonly type: 'SET_DATA', readonly payload: string }
+```
 
 ---
 
-### intersection types
+### Intersection Types
+交差型。Union Types の逆バージョン。
+
+「○○かつ☓☓型」という型。
+
+既存の型を拡張するときにも使える。
+また、Union Types が絡んだときにも時々出てくる。
+
+```ts
+type Foo = { foo: string }
+type Bar = { bar: number }
+type FooBar = Foo | Bar // => { foo: string, bar: number }
+```
 
 ---
 
 ### Enum
+他の言語とだいたい同じ。
+
+値のスタートは 0 で、任意の値を設定できる。
+
+Union Types にお株を奪われがち。
+
+```ts
+enum Service {
+  Bengo4,
+  Zeiri4,
+  BusinessLawyers,
+  CloudSign
+}
+```
 
 ---
 
 ### Optional Chaining
-参考
-https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a
+TypeScript 3.7 から導入された新機能。
+
+あるかどうかわからない（null, undefined かもしれない）ものに対してアクセスが可能。アクセス先の値か undefined が返る。
+
+参考：https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a
+
+```ts
+const foo = { bar: 'baz' }
+const hoge = null
+
+foo.?bar // => baz
+hoge.?fuga // => undefined
+```
 
 ---
 
 ### Nullish Coalescing
+これも TypeScript 3.7 から導入された。
+
+null, undefined なら undefined が、そうでなければ演算子の右側が返る。
+
+```ts
+const foo = 'bar'
+const hoge = null
+
+foo ?? 'default value' // => bar
+hoge ?? 'default value' // => 'default value'
+```
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-### ハンズオン
-実際に JavaScript に型をつけてみる。
+# 前回の質問に答える
 
 ---
 
-### 問題
-* Q1. 基本的な型の付け方
-* Q2. nullable な型の付け方（Union Types）
-* Q3. 配列の型の付け方（ジェネリクス）
-* Q4. クラスの作り方
-* Q5. オブジェクトの型付け
-* Q6. 型の絞り込み
-
-<small>物足りない方はこちら！</small>
-<small>https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a</small>
-<small>今回説明した内容以外にもいろいろ書いてある。</small>
+### 型の絞り込みはどうやってやるの？
+* `typeof`
+* Type Guard
+* `in`
+* `instanceof`
+* Tagged Union
 
 ---
 
-### まとめ
-いかがでしたか？（様式美）
+### `instanceof`
+`typeof` と大体同じ。
 
-最初は `any` を多用しても大丈夫。徐々に型システムに慣れていけば問題ないと考えている（もちろんデメリットが許容できれば）。
+右側にはコンストラクタ関数を置く。
+
+```ts
+class A {
+  show() {
+    console.log('A class!')
+  }
+}
+class B {}
+
+const a = new A()
+if (a instanceof A) {
+  a.show() // => A class!
+}
+```
 
 ---
 
-TypeScript を導入するが、引き続き JavaScript を書くこともできるように設定する予定。
+### Tagged Union
+タグ付けされた Union Types。
 
-わからない場合は JavaScript で書くのも手。
+説明には Redux がよく取り上げられる気がする。（けどもうあまり使われない？）
 
-TypeScript の型はかなり複雑なこともできるため、いろいろ試してみるといいかもしれない。
+```ts
+type SET_ACTION = { type: 'SET_ACTION', payload: string }
+type REMOVE_ACTION = { type: 'REMOVE_ACTION', payload: boolean }
+type Action = SET_ACTION | REMOVE_ACTION
 
----
-
-#### 例
-* 型で階乗
-    * https://nekko1119.hatenablog.com/entry/2019/04/24/010641
-* ポーカーの役判定
-    * https://qiita.com/suin/items/a68116a6c0ac81ea7ca7
-* 足し算・掛け算・乗算を 1 つの型でやる
-    * https://qiita.com/kgtkr/items/4fd2665db692bbf93a15
+const reducer = (state: State, action: Action) => {
+  switch (action.type) {
+    case: 'SET_ACTION':
+      return action.payload // => string
+    case: 'REMOVE_ACTION':
+      return action.payload // => boolean
+    default:
+      return action.payload // => never
+  }
+}
 
 +++
 
 ### 余談 1：他の言語にあるやつ
-* enum ある
 * interface ある（type とほぼ同義）
 * constructor 引数をフィールドに直接定義・代入するやつある（Kotlin とか）
 * オーバーライドある
-* オーバーロードある
-    * 演算子オーバーロードはない
 
 +++
 
@@ -354,9 +508,32 @@ TypeScript の型はかなり複雑なこともできるため、いろいろ試
 
 また、TypeScript に移行したプロジェクトにおいて、「やっぱり JavaScript に戻したい！」というニーズもある（らしい）。
 
-そんなときでも、コンパイル後のソースを見れば分かる通り、かなりきれいな JavaScript コードが生成される。
+そんなときでも、コンパイル後のソースを見れば分かるが、かなりきれいな JavaScript コードが生成される。
 
 JavaScript に戻したいときでも、コンパイラオプションをしっかり調整すれば、JavaScript に戻すのもかなり楽に行える。
+
+---
+
+### まとめ
+いかがでしたか？（実家のような安心感）
+
+TypeScript では JavaScript のつらみをなんとか解消するために独特な型があります。
+
+それらを使いこなせるようになると、とても柔軟に型付けが出来て、開発がスムーズに進むようになるはずです！
+
+困ったことがあれば気軽に私までご連絡ください！ 一緒に困ります。
+
+---
+
+# 次回 TypeScript 勉強会の予告
+
+---
+
+# Conditional Types
+
+---
+
+# 2020 / 01 / 16（木）17:00〜予定
 
 ---
 
@@ -366,10 +543,11 @@ JavaScript に戻したいときでも、コンパイラオプションをしっ
 
 ### 参考
 * TypeScriptの型入門
-  * https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a
-* 初心者のためのTypeScript入門
-  * https://www.tuyano.com/index2?id=12926003
-* TypeScript + Vue.js の始め方
-  * https://blog.asial.co.jp/2019/05/07/TypeScript_%2B_Vue_js_%E3%81%AE%E5%A7%8B%E3%82%81%E6%96%B9
-* TypeScriptのMethod Decoratorを解説する。
-  * https://qiita.com/ukiuni@github/items/8753c762abd7af831afe
+	* https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a
+* そろそろJavaScriptに採用されそうなOptional Chainingを今さら徹底解説
+	* https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a
+* Announcing TypeScript 3.7 Beta
+	* https://devblogs.microsoft.com/typescript/announcing-typescript-3-7-beta/
+* TypeScript Deep Dive 日本語版
+	* https://typescript-jp.gitbook.io/deep-dive/
+
