@@ -5,7 +5,7 @@ Getting Started TypeScript!
 ```
 git clone https://github.com/tee-talog/try-typescript-2.git
 cd try-typescript-2
-npm i
+npm ci
 ```
 
 # npm scripts
