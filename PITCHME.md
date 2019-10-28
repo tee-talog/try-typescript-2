@@ -3,7 +3,6 @@
 ---
 
 ### アジェンダ
-* 実行方法
 * 前回の復習
 * 他にどんな型があるのか
 * 他にどんな言語機能があるのか
@@ -11,19 +10,16 @@
 
 ---
 
-# 実行方法
+# 前回の復習
 
 ---
 
+## 実行方法
 ```sh:Terminal
 # 直接 TS ファイルを実行
 npm start src/try/try1.ts
- # => 3
+# => 3
 ```
-
----
-
-# 前回の復習
 
 ---
 
@@ -80,9 +76,9 @@ const add = (a: number, b: number): number => a + b
 * typeof 演算子
 	* JavaScript の使い方ができるとともに、型名を書く場所で使用すると、その変数の型が返ってくる。
 * Union Types
-	* 「○○型または☓☓型」という型。
+	* 「◯◯型または☓☓型」という型
 * 省略可能なプロパティ
-	* Union Types と似ているが、こちらは定義しなくてもいいプロパティを表すときのみ使用できる。
+	* 定義しなくてもいいプロパティを表す。
 *  デコレータ
 	* 簡単に言うと、クラスやメソッドなどに適用できる関数。
 
@@ -148,15 +144,35 @@ JavaScript に割と最近入った人たち。
 前回説明したやつ。
 
 ```ts
-type ObjectLiteral = {
+type Human = {
   firstName: string
   lastName: string
 }
 
-const tanaka: ObjectLiteral = {
+const tanaka: Human = {
   firstName: 'Tarou',
   lastName: 'Tanaka'
 }
+```
+
+---
+
+### weak type
+省略可能なプロパティのみで構成されたオブジェクトリテラル型。
+
+代入するオブジェクトは、省略可能なプロパティのうちいずれか 1 つを持っている必要がある。
+
+```ts
+type CliOptions = {
+  verbose?: boolean
+  row?: number
+  directory?: string
+}
+
+const options1: CliOptions = { verbose: true }
+const options2: CliOptions = { row: 10, help: true }
+// const options3: CliOptions = { help: true } // => Error
+const options4: CliOptions = {} // 例外として {} は代入できる
 ```
 
 ---
@@ -189,30 +205,10 @@ const brase4: {} = 'banana'
 
 ---
 
-### weak type
-省略可能なプロパティのみで構成されたオブジェクトリテラル型。
-
-代入するオブジェクトは、省略可能なプロパティのうちいずれか 1 つを持っている必要がある。
-
-```ts
-type CliOptions = {
-  verbose?: boolean
-  row?: number
-  directory?: string
-}
-
-// const options0: CliOptions = { help: true } // => Error
-const options1: CliOptions = { verbose: true }
-const options2: CliOptions = { row: 10, directory: './try-typescript-2' }
-const options3: CliOptions = {} // 例外として {} は代入できる
-```
-
----
-
 ### unknown
 型安全な any。any の代わりになるべくこれを使うべき。
 
-どんな型でも代入できるが、どんな型かわからないと、どんな操作もできない。
+どんな型かわからないと、どんな操作もできない。
 数値計算もできなければプロパティアクセスも出来ない。
 
 `JSON.parse()` の戻り値で使ってほしい。
@@ -230,16 +226,14 @@ if ('type' in config) {
 ---
 
 ### タプル型
-複数の値を 1 つの値として扱えるようにした型。配列の各要素に対して、それぞれ型をつけられる。
-
-JavaScript にはタプルはないが、配列で似たようなことができる（配列の分割代入など）。
+複数の値を 1 つの値として扱えるようにした型。配列の各要素に型をつけられる。
 
 関数は分けられないけど複数の値を返したいときに使える。
 
 ```ts
-type Tuple = [string, boolean]
+type TwoQuestion = [string, boolean]
 
-const tuple = ['あなたは人間ですか？', true]
+const questionAndAnswer: TwoQuestion = ['あなたは人間ですか？', true]
 ```
 
 ---
@@ -265,6 +259,8 @@ noReturnFunction() // => undefined
 
 どんな値も never 型の変数には入れられない。
 
+この性質を利用して、switch 文等が条件を網羅できているか確かめることもできる。
+
 ```ts
 const type: 'success' | 'fail' = 'success'
 
@@ -278,6 +274,8 @@ switch (type) {
   default:
     // type は never 型
 	console.log(type)
+	// 条件網羅チェック
+	const neverTest: never = type
 }
 ```
 
@@ -317,10 +315,10 @@ type Human = {
   lastName: string
 }
 
-const isHuman = (obj: Human): obj is Human =>
-    obj.firstName != null && obj.lastName != null
+const isHuman = (arg: any): arg is Human =>
+    obj != null && typeof obj.firstName === 'string' && typeof obj.lastName === 'string'
 
-const tanaka: Human | string | number = {
+const tanaka: Human | string  = {
   firstName: 'Tarou',
   lastName: 'Tanaka'
 }
@@ -338,7 +336,7 @@ if (isHuman(tanaka)) {
 ### readonly
 プロパティ版の const。
 
-getter only のプロパティ。
+インスタンス内からも getter only のプロパティ。
 
 ```ts
 class ReadOnlyProperty {
@@ -361,11 +359,11 @@ const instance = new ReadOnlyProperty()
 const actionCreator = (data: string) => {
   return {
     type: 'SET_DATA',
-    payload: data
+    payload: { [data, 'payload'] }
   } as const
 }
 
-actionCreator('test') // => { readonly type: 'SET_DATA', readonly payload: string }
+actionCreator('test') // => { readonly type: 'SET_DATA', readonly payload: { data: [string, 'payload'] } }
 ```
 
 ---
@@ -373,7 +371,7 @@ actionCreator('test') // => { readonly type: 'SET_DATA', readonly payload: strin
 ### Intersection Types
 交差型。Union Types の逆バージョン。
 
-「○○かつ☓☓型」という型。
+「◯◯型かつ☓☓型」という型。
 
 既存の型を拡張するときにも使える。
 また、Union Types が絡んだときにも時々出てくる。
@@ -381,7 +379,7 @@ actionCreator('test') // => { readonly type: 'SET_DATA', readonly payload: strin
 ```ts
 type Foo = { foo: string }
 type Bar = { bar: number }
-type FooBar = Foo | Bar // => { foo: string, bar: number }
+type FooBar = Foo & Bar // => { foo: string, bar: number }
 ```
 
 ---
@@ -424,19 +422,38 @@ hoge.?fuga // => undefined
 ### Nullish Coalescing
 これも TypeScript 3.7 から導入された。
 
-null, undefined なら undefined が、そうでなければ演算子の右側が返る。
+null, undefined でなければ演算子の左側が、そうでなければ演算子の右側が返る。
+
+パラメータのデフォルト値を設定するときに重宝するはず。
 
 ```ts
 const foo = 'bar'
 const hoge = null
 
-foo ?? 'default value' // => bar
-hoge ?? 'default value' // => 'default value'
+foo ?? 'default' // => 'bar'
+hoge ?? 'default' // => 'default'
 ```
 
 ---
 
 # 前回の質問に答える
+
+---
+
+### 配列型の書き方はどうする？
+* Array<string>
+* string[]
+
+主に後者を利用する。
+
+理由は単純にわかりやすい・見やすいから（個人の感想）。
+
+---
+
+### CloudSign で導入するときにハマったこと
+vue-loader のバージョンが古かったためか、モジュール解決がうまくいかなかった。
+
+大絶賛バージョンアップ作業中……
 
 ---
 
@@ -487,9 +504,10 @@ const reducer = (state: State, action: Action) => {
     case: 'REMOVE_ACTION':
       return action.payload // => boolean
     default:
-      return action.payload // => never
+      return action // => never
   }
 }
+```
 
 +++
 
