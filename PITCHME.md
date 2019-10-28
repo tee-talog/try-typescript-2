@@ -576,6 +576,7 @@ console.log(
 * interface ある（type とほぼ同義）
 * constructor 引数をフィールドに直接定義・代入するやつある（Kotlin とか）
 * オーバーライドある
+* オーバーロードある
 
 +++
 
@@ -585,7 +586,7 @@ console.log(
 
 +++
 
-また、TypeScript に移行したプロジェクトにおいて、「やっぱり JavaScript に戻したい！」というニーズもある（らしい）。
+また、TypeScript プロジェクトにおいて、「やっぱり JavaScript にしたい！」というニーズもないことはない。
 
 そんなときでも、コンパイル後のソースを見れば分かるが、かなりきれいな JavaScript コードが生成される。
 

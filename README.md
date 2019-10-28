@@ -8,8 +8,6 @@ cd try-typescript-2
 npm i
 ```
 
-slide page 19
-
 # npm scripts
 * npm build
   * compile all .ts files
