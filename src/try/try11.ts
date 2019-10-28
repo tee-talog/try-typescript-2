@@ -1,10 +1,16 @@
-import express from 'express'
-
 {
-  const app = express() // app は Express 型
+  const value: any = 'success'
+  const answer: 'success' | 'fail' = value
 
-  app.get('/', (req, res) => {
-    res.send('Hello World') // res は Response 型
-  })
-  app.listen(3000)
+  switch (answer) {
+    case 'success':
+      console.log('ok')
+      break
+    case 'fail':
+      console.log('ng')
+      break
+    default:
+      console.log('never')
+      const test: never = answer
+  }
 }

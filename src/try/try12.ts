@@ -1,12 +1,24 @@
 {
-  // JavaScript と同じ使い方
-  const str: string = 'string'
-  if (typeof str === 'string') {
-    console.log('str is string') // => 出力される
+  type Human = {
+    firstName: string
+    lastName: string
   }
 
-  // TypeScript 独自の使い方
-  type strType = typeof str // strType は string 型
-  const length = (s: strType): number => s.length
-  console.log(length(str)) // => 6
+  const isHuman = (arg: any): arg is Human =>
+    arg != null &&
+    typeof arg.firstName === 'string' &&
+    typeof arg.lastName === 'string'
+
+  const value: any = {
+    firstName: 'Tarou',
+    lastName: 'Tanaka'
+  }
+  const tanaka: Human | string = value
+
+  // console.log(tanaka.firstName) // => Error
+
+  if (isHuman(tanaka)) {
+    // tanaka は Human 型として扱える
+    console.log(tanaka.firstName)
+  }
 }

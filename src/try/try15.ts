@@ -1,21 +1,7 @@
 {
-  const TheDecorator = (arg: string) => {
-    return (target: any, name: string, descriptor: PropertyDescriptor) => {
-      // 元メソッド
-      const method = descriptor.value
+  type Foo = { foo: string }
+  type Bar = { bar: number }
+  type FooBar = Foo & Bar // => { foo: string, bar: number }
 
-      descriptor.value = function() {
-        console.log('decorator ' + arg)
-        // 元のメソッドを呼ぶ
-        return method.apply(this, arguments)
-      }
-    }
-  }
-
-  class A {
-    @TheDecorator('hello')
-    nop() {}
-  }
-
-  new A().nop() // => decorator hello
+  const fb: FooBar = { foo: 'baz', bar: 10 }
 }

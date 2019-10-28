@@ -1,8 +1,11 @@
 {
-  type Human = {
-    name: string
-    organization?: string
+  const actionCreator = (data: string) => {
+    return {
+      type: 'SET_DATA',
+      payload: { value: [data, 'payload'] }
+    } as const
   }
-  const mushoku: Human = { name: '無職の男' } // organization プロパティを定義しなくても OK
-  console.log(mushoku.name)
+
+  console.log(actionCreator('test'))
+  // => { readonly type: 'SET_DATA', readonly payload: { readonly value: [string, 'payload'] } }
 }

@@ -1,6 +1,4 @@
 {
-  const insertSpace = function(this: string): string {
-    return this.split('').join(' ')
-  }
-  console.log(insertSpace.call('test'))
+  type TwoQuestion = [string, boolean]
+  const questionAndAnswer: TwoQuestion = ['あなたは人間ですか？', true]
 }

@@ -1,5 +1,11 @@
 {
-  const one = 1
-  const isTrue = true
-  const hello = 'world'
+  type Human = {
+    firstName: string
+    lastName: string
+  }
+
+  const tanaka: Human = {
+    firstName: 'Tarou',
+    lastName: 'Tanaka'
+  }
 }

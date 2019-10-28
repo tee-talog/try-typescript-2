@@ -10,6 +10,10 @@
 
 ---
 
+# TODO リポジトリクローン
+
+---
+
 # 前回の復習
 
 ---
@@ -18,6 +22,8 @@
 ```sh:Terminal
 # 直接 TS ファイルを実行
 npm start src/try/try1.ts
+# もしくは
+npx ts-node src/try/try1.ts
 # => 3
 ```
 
@@ -25,6 +31,8 @@ npm start src/try/try1.ts
 
 ### 型の書き方
 「型アノテーション」というもので型定義する。
+
+`try2.ts`
 
 ```ts
 // 変数に型付けする場合
@@ -76,7 +84,7 @@ const add = (a: number, b: number): number => a + b
 * typeof 演算子
 	* JavaScript の使い方ができるとともに、型名を書く場所で使用すると、その変数の型が返ってくる。
 * Union Types
-	* 「◯◯型または☓☓型」という型
+	* 「◯◯型**または**☓☓型」という型
 * 省略可能なプロパティ
 	* 定義しなくてもいいプロパティを表す。
 *  デコレータ
@@ -122,6 +130,15 @@ JavaScript に割と最近入った人たち。
 
 `symbol` は ES2015、`bigint` は ES2020 で実装。
 
+`try3.ts`
+
+```ts
+{
+  const s: symbol = Symbol()
+  const bi: bigint = 100n
+}
+```
+
 ---
 
 ### 非プリミティブ型
@@ -143,6 +160,8 @@ JavaScript に割と最近入った人たち。
 ### オブジェクトリテラル
 前回説明したやつ。
 
+`try4.ts`
+
 ```ts
 type Human = {
   firstName: string
@@ -162,6 +181,8 @@ const tanaka: Human = {
 
 代入するオブジェクトは、省略可能なプロパティのうちいずれか 1 つを持っている必要がある。
 
+`try5.ts`
+
 ```ts
 type CliOptions = {
   verbose?: boolean
@@ -170,15 +191,16 @@ type CliOptions = {
 }
 
 const options1: CliOptions = { verbose: true }
-const options2: CliOptions = { row: 10, help: true }
-// const options3: CliOptions = { help: true } // => Error
-const options4: CliOptions = {} // 例外として {} は代入できる
+// const options2: CliOptions = { row: 10, help: true } // Error
+const options3: CliOptions = {} // 例外として {} は代入できる
 ```
 
 ---
 
 ### `object`
 プリミティブ型と null, undefined 以外なら何でも入る。ちょっと堅い any。
+
+`try6.ts`
 
 ```ts
 const obj1: object = { foo: 'foo', bar: 'bar', baz: 'baz' }
@@ -194,6 +216,8 @@ const obj2: object = { hoge: 'hoge', fuga: 'fuga' }
 
 つまり null, undeifned 以外。
 
+`try7.ts`
+
 ```ts
 const brace1: {} = { foo: 'foo', bar: 'bar', baz: 'baz' }
 const brase2: {} = { hoge: 'hoge', fuga: 'fuga' }
@@ -208,19 +232,19 @@ const brase4: {} = 'banana'
 ### unknown
 型安全な any。any の代わりになるべくこれを使うべき。
 
-どんな型かわからないと、どんな操作もできない。
 数値計算もできなければプロパティアクセスも出来ない。
 
 `JSON.parse()` の戻り値で使ってほしい。
 
-```ts
-const jsonFileString = require('fs').readFileSync('./config.json')
-const config: unknown = JSON.parse(jsonFileString) as unknown
+`try8.ts`
 
-// console.log(config.type) // => Error
-if ('type' in config) {
-  console.log(config.type)
+```ts
+const name: unknown = 'value'
+// console.log(name.toUpperCase()) // => Error
+if (typeof name === 'string') {
+  console.log(name.toUpperCase())
 }
+
 ```
 
 ---
@@ -230,9 +254,10 @@ if ('type' in config) {
 
 関数は分けられないけど複数の値を返したいときに使える。
 
+`try9.ts`
+
 ```ts
 type TwoQuestion = [string, boolean]
-
 const questionAndAnswer: TwoQuestion = ['あなたは人間ですか？', true]
 ```
 
@@ -244,6 +269,8 @@ const questionAndAnswer: TwoQuestion = ['あなたは人間ですか？', true]
 戻り値のない関数の戻り値の型。
 
 undefined だけを値に取る。
+
+`try10.ts`
 
 ```ts
 const noReturnFunction = (): void => {}
@@ -261,21 +288,22 @@ noReturnFunction() // => undefined
 
 この性質を利用して、switch 文等が条件を網羅できているか確かめることもできる。
 
-```ts
-const type: 'success' | 'fail' = 'success'
+`try11.ts`
 
-switch (type) {
+```ts
+const value: any = 'success'
+const answer: 'success' | 'fail' = value
+
+switch (answer) {
   case 'success':
     console.log('ok')
     break
-  case 'fail'
+  case 'fail':
     console.log('ng')
     break
   default:
-    // type は never 型
-	console.log(type)
-	// 条件網羅チェック
-	const neverTest: never = type
+    console.log('never')
+    const test: never = answer
 }
 ```
 
@@ -286,7 +314,7 @@ switch (type) {
 ---
 
 ### 今回やる
-* Type Guard
+* Type Guard 関数
 * readonly
 * const assertion
 * Intersection Types
@@ -302,12 +330,14 @@ switch (type) {
 
 ---
 
-### Type Guard
+### Type Guard 関数
 型を絞り込むための関数が作れる。
 
 これを使用して if 文等で絞り込みを行うと、typeof で分岐したときと同じように型が絞り込まれる。
 
 プログラミングをする人が型の安全性を保証する必要がある。
+
+`try12.ts`
 
 ```ts
 type Human = {
@@ -316,7 +346,9 @@ type Human = {
 }
 
 const isHuman = (arg: any): arg is Human =>
-    obj != null && typeof obj.firstName === 'string' && typeof obj.lastName === 'string'
+    obj != null &&
+    typeof obj.firstName === 'string' &&
+    typeof obj.lastName === 'string'
 
 const tanaka: Human | string  = {
   firstName: 'Tarou',
@@ -338,6 +370,8 @@ if (isHuman(tanaka)) {
 
 インスタンス内からも getter only のプロパティ。
 
+`try13.ts`
+
 ```ts
 class ReadOnlyProperty {
   readonly zero = 0
@@ -345,6 +379,7 @@ class ReadOnlyProperty {
 }
 
 const instance = new ReadOnlyProperty()
+console.log(instance.zero)
 // instance.zero = 100 // Error
 ```
 
@@ -355,15 +390,18 @@ const instance = new ReadOnlyProperty()
 
 例えばオブジェクトリテラルに使った場合、プロパティが readonly になり、なるべくリテラル型・タプル型に推論される。
 
+`try14.ts`
+
 ```ts
 const actionCreator = (data: string) => {
   return {
     type: 'SET_DATA',
-    payload: { [data, 'payload'] }
+    payload: { value: [data, 'payload'] }
   } as const
 }
 
-actionCreator('test') // => { readonly type: 'SET_DATA', readonly payload: { data: [string, 'payload'] } }
+console.log(actionCreator('test'))
+// => { readonly type: 'SET_DATA', readonly payload: { readonly value: [string, 'payload'] } }
 ```
 
 ---
@@ -371,15 +409,19 @@ actionCreator('test') // => { readonly type: 'SET_DATA', readonly payload: { dat
 ### Intersection Types
 交差型。Union Types の逆バージョン。
 
-「◯◯型かつ☓☓型」という型。
+「◯◯型**かつ**☓☓型」という型。
 
 既存の型を拡張するときにも使える。
 また、Union Types が絡んだときにも時々出てくる。
+
+`try15.ts`
 
 ```ts
 type Foo = { foo: string }
 type Bar = { bar: number }
 type FooBar = Foo & Bar // => { foo: string, bar: number }
+
+const fb: FooBar = { foo: 'baz', bar: 10 }
 ```
 
 ---
@@ -390,6 +432,8 @@ type FooBar = Foo & Bar // => { foo: string, bar: number }
 値のスタートは 0 で、任意の値を設定できる。
 
 Union Types にお株を奪われがち。
+
+`try16.ts`
 
 ```ts
 enum Service {
@@ -409,12 +453,14 @@ TypeScript 3.7 から導入された新機能。
 
 参考：https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a
 
+`try17.ts`
+
 ```ts
 const foo = { bar: 'baz' }
 const hoge = null
 
-foo.?bar // => baz
-hoge.?fuga // => undefined
+foo?.bar // => baz
+hoge?.fuga // => undefined
 ```
 
 ---
@@ -425,6 +471,8 @@ hoge.?fuga // => undefined
 null, undefined でなければ演算子の左側が、そうでなければ演算子の右側が返る。
 
 パラメータのデフォルト値を設定するときに重宝するはず。
+
+`try18.ts`
 
 ```ts
 const foo = 'bar'
@@ -459,7 +507,7 @@ vue-loader のバージョンが古かったためか、モジュール解決が
 
 ### 型の絞り込みはどうやってやるの？
 * `typeof`
-* Type Guard
+* Type Guard 関数
 * `in`
 * `instanceof`
 * Tagged Union
@@ -470,6 +518,8 @@ vue-loader のバージョンが古かったためか、モジュール解決が
 `typeof` と大体同じ。
 
 右側にはコンストラクタ関数を置く。
+
+`try19.ts`
 
 ```ts
 class A {
@@ -492,21 +542,32 @@ if (a instanceof A) {
 
 説明には Redux がよく取り上げられる気がする。（けどもうあまり使われない？）
 
+`try20.ts`
+
 ```ts
-type SET_ACTION = { type: 'SET_ACTION', payload: string }
-type REMOVE_ACTION = { type: 'REMOVE_ACTION', payload: boolean }
+type State = 'state'
+type SET_ACTION = { type: 'SET_ACTION'; payload: string }
+type REMOVE_ACTION = { type: 'REMOVE_ACTION'; payload: number }
 type Action = SET_ACTION | REMOVE_ACTION
 
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
-    case: 'SET_ACTION':
-      return action.payload // => string
-    case: 'REMOVE_ACTION':
-      return action.payload // => boolean
+    case 'SET_ACTION':
+      return action.payload.toUpperCase() // => string
+    case 'REMOVE_ACTION':
+      return action.payload.toFixed() // => number
     default:
-      return action // => never
+      const test: never = action // => never
+      throw new Error()
   }
 }
+
+console.log(
+  reducer('state', {
+    type: 'SET_ACTION',
+    payload: 'value'
+  })
+)
 ```
 
 +++
