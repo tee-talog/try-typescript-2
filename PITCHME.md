@@ -10,7 +10,10 @@
 
 ---
 
-# TODO リポジトリクローン
+### 前準備
+git clone https://github.com/tee-talog/try-typescript-2.git
+cd try-typescript-2
+npm i
 
 ---
 
@@ -19,11 +22,12 @@
 ---
 
 ## 実行方法
+直接 TS ファイルを実行
+
 ```sh:Terminal
-# 直接 TS ファイルを実行
-npm start src/try/try1.ts
+npm start src/try1.ts
 # もしくは
-npx ts-node src/try/try1.ts
+npx ts-node src/try1.ts
 # => 3
 ```
 
@@ -69,7 +73,7 @@ const add = (a: number, b: number): number => a + b
 * リテラル型
 	* `"1"` 型、`334` 型、`true` 型 など。
 * any 型
-	* **嘘**（※ネタです）
+	* **嘘** ※ネタです
 	* どの型でも受け入れる。
 
 ---
@@ -214,15 +218,15 @@ const obj2: object = { hoge: 'hoge', fuga: 'fuga' }
 ### `{}`
 プリミティブ型を**含む**、プロパティアクセス可能な値。
 
-つまり null, undeifned 以外。
+つまり null, undefined 以外。
 
 `try7.ts`
 
 ```ts
 const brace1: {} = { foo: 'foo', bar: 'bar', baz: 'baz' }
-const brase2: {} = { hoge: 'hoge', fuga: 'fuga' }
-const brase3: {} = 1
-const brase4: {} = 'banana'
+const brace2: {} = { hoge: 'hoge', fuga: 'fuga' }
+const brace3: {} = 1
+const brace4: {} = 'banana'
 ```
 
 特別な理由がない限り使わないのが吉。
@@ -244,7 +248,6 @@ const name: unknown = 'value'
 if (typeof name === 'string') {
   console.log(name.toUpperCase())
 }
-
 ```
 
 ---
@@ -282,7 +285,7 @@ noReturnFunction() // => undefined
 ### never
 到達しないことを表す型。
 
-いずれかの case にマッチする switch 文の default や、必ず throw される関数の戻り値（として指定できる）。
+いずれかの case にマッチする switch 文の default や、必ず throw される関数の戻り値の型。
 
 どんな値も never 型の変数には入れられない。
 
@@ -346,9 +349,9 @@ type Human = {
 }
 
 const isHuman = (arg: any): arg is Human =>
-    obj != null &&
-    typeof obj.firstName === 'string' &&
-    typeof obj.lastName === 'string'
+    arg != null &&
+    typeof arg.firstName === 'string' &&
+    typeof arg.lastName === 'string'
 
 const tanaka: Human | string  = {
   firstName: 'Tarou',
@@ -368,7 +371,7 @@ if (isHuman(tanaka)) {
 ### readonly
 プロパティ版の const。
 
-インスタンス内からも getter only のプロパティ。
+クラス内からも getter only のプロパティ。
 
 `try13.ts`
 
@@ -376,6 +379,7 @@ if (isHuman(tanaka)) {
 class ReadOnlyProperty {
   readonly zero = 0
   one = 1
+  // error() { this.zero = 2 } // Error
 }
 
 const instance = new ReadOnlyProperty()
@@ -609,7 +613,10 @@ TypeScript では JavaScript のつらみをなんとか解消するために独
 
 ---
 
-# Conditional Types
+* keyof
+* プロパティアクセス型
+* Mapped Types
+* **Conditional Types**
 
 ---
 
@@ -630,4 +637,3 @@ TypeScript では JavaScript のつらみをなんとか解消するために独
 	* https://devblogs.microsoft.com/typescript/announcing-typescript-3-7-beta/
 * TypeScript Deep Dive 日本語版
 	* https://typescript-jp.gitbook.io/deep-dive/
-

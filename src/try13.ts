@@ -2,6 +2,7 @@
   class ReadOnlyProperty {
     readonly zero = 0
     one = 1
+    // error() { this.zero = 2 } // Error
   }
 
   const instance = new ReadOnlyProperty()
