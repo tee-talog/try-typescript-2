@@ -11,7 +11,7 @@
 ---
 
 ### 前準備
-```
+```sh:Terminal
 git clone https://github.com/tee-talog/try-typescript-2.git
 cd try-typescript-2
 npm ci
@@ -23,7 +23,7 @@ npm ci
 
 ---
 
-## 実行方法
+### 実行方法
 直接 TS ファイルを実行
 
 ```sh:Terminal
