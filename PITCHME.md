@@ -11,9 +11,11 @@
 ---
 
 ### 前準備
+```
 git clone https://github.com/tee-talog/try-typescript-2.git
 cd try-typescript-2
 npm ci
+```
 
 ---
 
@@ -87,6 +89,10 @@ const add = (a: number, b: number): number => a + b
 	* 別の型として扱えるようにする構文。
 * typeof 演算子
 	* JavaScript の使い方ができるとともに、型名を書く場所で使用すると、その変数の型が返ってくる。
+
+---
+
+### 言語機能
 * Union Types
 	* 「◯◯型**または**☓☓型」という型
 * 省略可能なプロパティ
@@ -116,12 +122,6 @@ const add = (a: number, b: number): number => a + b
 ---
 
 ### プリミティブ型
-* string（文字列）
-* number（数値）
-* boolean（真偽値）
-* null
-* undefined
-* リテラル型
 * symbol
 * bigint
 
@@ -146,14 +146,11 @@ JavaScript に割と最近入った人たち。
 ---
 
 ### 非プリミティブ型
-* 配列型
 * オブジェクト型
 	* オブジェクトリテラル
 		* weak type
 	* object
 	* {}
-* 関数型
-* any
 * unknown
 * タプル型
 * void
@@ -183,7 +180,7 @@ const tanaka: Human = {
 ### weak type
 省略可能なプロパティのみで構成されたオブジェクトリテラル型。
 
-代入するオブジェクトは、省略可能なプロパティのうちいずれか 1 つを持っている必要がある。
+代入するオブジェクトは、プロパティに存在する値しか持てない。
 
 `try5.ts`
 
@@ -291,6 +288,9 @@ noReturnFunction() // => undefined
 
 この性質を利用して、switch 文等が条件を網羅できているか確かめることもできる。
 
+---
+
+### never
 `try11.ts`
 
 ```ts
@@ -316,20 +316,16 @@ switch (answer) {
 
 ---
 
-### 今回やる
+### 今回やるもの
 * Type Guard 関数
 * readonly
 * const assertion
 * Intersection Types
 * Enum
+
+#### 時間があれば
 * Optional Chaining
 * Nullish Coalescing
-
-### 今回やらない
-* keyof
-* プロパティアクセス型
-* Mapped Types
-* Conditional Types
 
 ---
 
@@ -340,6 +336,9 @@ switch (answer) {
 
 プログラミングをする人が型の安全性を保証する必要がある。
 
+---
+
+### Type Guard 関数
 `try12.ts`
 
 ```ts
@@ -394,6 +393,9 @@ console.log(instance.zero)
 
 例えばオブジェクトリテラルに使った場合、プロパティが readonly になり、なるべくリテラル型・タプル型に推論される。
 
+---
+
+### const assertion
 `try14.ts`
 
 ```ts
@@ -448,14 +450,14 @@ enum Service {
 }
 ```
 
----
++++
 
 ### Optional Chaining
 TypeScript 3.7 から導入された新機能。
 
 あるかどうかわからない（null, undefined かもしれない）ものに対してアクセスが可能。アクセス先の値か undefined が返る。
 
-参考：https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a
+<small>参考：https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a</small>
 
 `try17.ts`
 
@@ -467,7 +469,7 @@ foo?.bar // => baz
 hoge?.fuga // => undefined
 ```
 
----
++++
 
 ### Nullish Coalescing
 これも TypeScript 3.7 から導入された。
@@ -546,6 +548,9 @@ if (a instanceof A) {
 
 説明には Redux がよく取り上げられる気がする。（けどもうあまり使われない？）
 
+---
+
+### Tagged Union
 `try20.ts`
 
 ```ts
@@ -620,7 +625,7 @@ TypeScript では JavaScript のつらみをなんとか解消するために独
 
 ---
 
-# 2020 / 01 / 16（木）17:00〜予定
+## 2020 / 01 / 16（木）17:00〜 ※予定
 
 ---
 
