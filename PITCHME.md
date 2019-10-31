@@ -1,4 +1,4 @@
-# TypeScript 入門 〜もうちょっと詳しく編〜
+## TypeScript 入門 〜もうちょっと詳しく編〜
 
 ---
 
@@ -356,9 +356,7 @@ const tanaka: Human | string  = {
   firstName: 'Tarou',
   lastName: 'Tanaka'
 }
-
 // console.log(tanaka.firstName) // => Error
-
 if (isHuman(tanaka)) {
   // tanaka は Human 型として扱える
   console.log(tanaka.firstName)
@@ -407,7 +405,14 @@ const actionCreator = (data: string) => {
 }
 
 console.log(actionCreator('test'))
-// => { readonly type: 'SET_DATA', readonly payload: { readonly value: [string, 'payload'] } }
+/* =>
+  {
+    readonly type: 'SET_DATA',
+    readonly payload: {
+      readonly value: [string, 'payload']
+    }
+  }
+*/
 ```
 
 ---
@@ -561,13 +566,9 @@ type Action = SET_ACTION | REMOVE_ACTION
 
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
-    case 'SET_ACTION':
-      return action.payload.toUpperCase() // => string
-    case 'REMOVE_ACTION':
-      return action.payload.toFixed() // => number
-    default:
-      const test: never = action // => never
-      throw new Error()
+    case 'SET_ACTION': return action.payload.toUpperCase() // => string
+    case 'REMOVE_ACTION': return action.payload.toFixed() // => number
+    default: const test: never = action; throw new Error() // => never
   }
 }
 

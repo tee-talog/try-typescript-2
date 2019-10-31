@@ -8,6 +8,10 @@
   word-wrap: break-word;
 }
 
+.reveal h1 {
+  font-size: 3em;
+}
+
 .reveal code {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }
